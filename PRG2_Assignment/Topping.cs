@@ -8,5 +8,16 @@ namespace PRG2_Assignment
 {
     internal class Topping
     {
+        public string Toptype { get; set; }
+        public Topping () { }
+        public Topping(string toptype)
+        {
+            Toptype = toptype;
+        }
+        public override string ToString()
+        {
+            return $"Type of Toppings: {Toptype}";
+        }
+        
     }
 }

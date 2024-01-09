@@ -8,6 +8,32 @@ namespace PRG2_Assignment
 {
     internal class Order
     {
-    public int nigga 
+        public int Id { get; set; }
+        public DateTime Timereceived { get; set; }
+        public DateTime? Timefufilled {  get; set; }
+        public List<IceCream> IceCreamList { get; set; } = new();
+        public Order() { }
+        public Order(int id, DateTime timereceived)
+        {
+            Id = id;
+            Timereceived = timereceived;
+        }
+        public void ModifyIceCream(int id)
+        {
+
+        }
+        public void AddIceCream(IceCream iceCream)
+        {
+            IceCreamList.Add(iceCream);
+        }
+        public void DeleteIceCream(IceCream iceCream)
+        {
+            IceCreamList.Remove(iceCream);
+        }
+        public double CalculateTotal()
+        {
+
+        }
+
     }
 }
