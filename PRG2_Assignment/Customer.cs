@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace PRG2_Assignment
 {
-    internal class Order
+    internal class Customer
     {
-    public int nigga 
     }
 }
