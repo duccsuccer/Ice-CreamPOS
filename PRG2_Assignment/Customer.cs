@@ -13,6 +13,27 @@ namespace PRG2_Assignment
         public DateTime Dob { get; set; }
         public Order CurrentOrder { get; set; }
         public List<Order> Orderhistory { get; set; } = new();
-        
+        public PointCard Rewards { get; set; }
+        public Customer() { }
+        public Customer(string name, int memberid,DateTime dob)
+        {
+            Name = name;
+            Memberid = memberid;
+            Dob = dob;
+        }
+        public Order MakeOrder()
+        {
+            Order order = new Order();
+            return order;
+        }
+        public bool IsBirthday()
+        {
+            if ()
+        }
+        public override string ToString()
+        {
+            return base.ToString() + $"Name: {Name} MemberID: {Memberid} Date Of Birth {Dob}";
+        }
+
     }
 }
