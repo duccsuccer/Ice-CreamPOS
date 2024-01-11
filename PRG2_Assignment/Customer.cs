@@ -28,7 +28,11 @@ namespace PRG2_Assignment
         }
         public bool IsBirthday()
         {
-            if ()
+            if (DateTime.Now != Dob)
+            {
+                return false;
+            }
+            return true;
         }
         public override string ToString()
         {

@@ -32,7 +32,7 @@ namespace PRG2_Assignment
         }
         public double CalculateTotal()
         {
-
+            return 0;
         }
 
     }
