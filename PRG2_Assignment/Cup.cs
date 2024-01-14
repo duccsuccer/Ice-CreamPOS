@@ -36,5 +36,6 @@ namespace PRG2_Assignment
         {
             return base.ToString() + $"Price +{CalculatePrice()}";
         }
+    
     }
 }
