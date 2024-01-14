@@ -89,8 +89,7 @@ static void ListCustomers(List<Customer> cList)
 //2
 static void ListCurrentOrders()
 {
-    foreach (var a in List < IceCream > IceCreamList)
-        Console.WriteLine(a);
+    
 }
 //3
 static void CustomerReg()
