@@ -1,6 +1,8 @@
 ﻿using PRG2_Assignment;
 
 int option;
+List<Customer> customerList = new();
+ReadCSV(customerList);
 while (true)
 {
     try
@@ -13,7 +15,7 @@ while (true)
         }
         else if (option == 1)
         {
-            ListCustomers();
+            ListCustomers(customerList);
         }
         else if (option == 2)
         {
@@ -33,6 +35,8 @@ while (true)
         }
         else if (option == 6)
         {
+            ListCustomers(customerList);
+
             ModifyOrder();
         }
     }
@@ -56,11 +60,27 @@ static void DisplayMenu()
 
 }
 
-//1
-static void ListCustomers() 
-    
+static void ReadCSV(List<Customer> cList)
 {
+    string[] data = File.ReadAllLines("customers.csv");
+    foreach (string line in data.Skip(1)) // Skip header
+    {
+        string[] customers = line.Split(',');
+        string name = customers[0];
+        int id = Convert.ToInt32(customers[1]);
+        DateTime dob = DateTime.Parse(customers[2]);
+        Customer customer = new(name, id, dob);
+        cList.Add(customer);
+    }
+}
 
+//1
+static void ListCustomers(List<Customer> cList) 
+{
+    foreach (Customer customer in cList)
+    {
+        Console.WriteLine(customer.ToString());
+    }
 }
 //2
 static void ListCurrentOrders()
@@ -85,5 +105,21 @@ static void DisplayOrder()
 //6
 static void ModifyOrder()
 {
+    
+    Console.Write("\r\n---------------- M E N U -----------------\r\n" +
+    "[1] Modify an existing iceream\r\n" +
+    "[2] Add a new icecream\r\n" +
+    "[3] Delete an icecream\r\n" +
+    "[0] Exit/Cancel\r\n" +
+    "Enter your option: ");
+    int option1 = Convert.ToInt32(Console.ReadLine());
+    if (option1 == 0)
+    {
+        return;
+    }
+    else if ( option1 == 1)
+    {
+        
+    }
 
 }

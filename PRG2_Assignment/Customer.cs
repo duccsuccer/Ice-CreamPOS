@@ -28,11 +28,15 @@ namespace PRG2_Assignment
         }
         public bool IsBirthday()
         {
-            if ()
+            if (Dob != DateTime.Now)
+            {
+                return false;
+            }
+            return true;
         }
         public override string ToString()
         {
-            return base.ToString() + $"Name: {Name} MemberID: {Memberid} Date Of Birth {Dob}";
+            return $"Name: {Name} MemberID: {Memberid} Date Of Birth {Dob}";
         }
 
     }

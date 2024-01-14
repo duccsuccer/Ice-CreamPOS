@@ -20,7 +20,16 @@ namespace PRG2_Assignment
         }
         public void ModifyIceCream(int id)
         {
-
+            if (id == Id)
+            {
+                Console.Write("Option: ");
+                string option = Console.ReadLine();
+                Console.Write("Number of scoops");
+                int scoops = Convert.ToInt32(Console.ReadLine());
+                Console.Write("Flavour: ");
+                string flavour = Console.ReadLine();
+                
+            }
         }
         public void AddIceCream(IceCream iceCream)
         {
@@ -32,7 +41,12 @@ namespace PRG2_Assignment
         }
         public double CalculateTotal()
         {
-
+            double total = 0;
+            foreach (IceCream iceCream in IceCreamList)
+            {
+                total += iceCream.CalculatePrice();
+            }
+            return total;
         }
 
     }
