@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PRG2_Assignment : Customer
+namespace PRG2_Assignment 
 {
-    internal class PointCard
+    internal class PointCard : Customer
     {
         public int Points { get; set; }
         public int PunchCard { get; set; }
@@ -21,8 +21,9 @@ namespace PRG2_Assignment : Customer
         }
         public void AddPoints(int points)
         {
-            float total = Customer.Order.CalculateTotal();
-            int points = (int)Math.Floor(total * 0.72);
+
+            double total = 2.5;
+            points = (int)Math.Floor(total * 0.72);
         }
         public void RedeemPoints(int points)
         {
@@ -31,7 +32,7 @@ namespace PRG2_Assignment : Customer
                 return;
             }
 
-            float discount = points * 0.02;
+            double discount = points * 0.02;
             points = 0;
         }
         public void Punch()

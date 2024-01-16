@@ -36,7 +36,7 @@ namespace PRG2_Assignment
         }
         public override string ToString()
         {
-            return $"Name: {Name} MemberID: {Memberid} Date Of Birth {Dob}";
+            return $"Name: {Name}, Member ID: {Memberid}, Date Of Birth: {Dob}";
         }
 
     }

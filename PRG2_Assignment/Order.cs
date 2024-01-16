@@ -23,7 +23,7 @@ namespace PRG2_Assignment
             foreach (IceCream icecreams in IceCreamList)
 			{
 				int i = 1;
-				Console.Writeline($"[{i}] {icecreams}")
+				Console.WriteLine($"[{i}] {icecreams}");
 				i++;
 			}
 			

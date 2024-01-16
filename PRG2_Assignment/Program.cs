@@ -1,12 +1,14 @@
 ﻿using PRG2_Assignment;
 
-int option;
-List<IceCream> IceCreamList = new();
+
+List<IceCream> iceCreamList = new();
 List<Order> oList = new();
 List<Customer> customerList = new();
-ReadCSV(customerList);
+ReadCustomerCsv(customerList);
+ReadOrderCsv(oList);
 while (true)
 {
+    int option;
     try
     { 
         DisplayMenu();
@@ -38,8 +40,8 @@ while (true)
         else if (option == 6)
         {
             ListCustomers(customerList);
-
-            ModifyOrder();
+            
+            ModifyOrder(customerList);
         }
         else
         {
@@ -66,7 +68,7 @@ static void DisplayMenu()
 
 }
 
-static void ReadCustomerCSV(List<Customer> cList)
+static void ReadCustomerCsv(List<Customer> cList)
 {
     string[] data = File.ReadAllLines("customers.csv");
     foreach (string line in data.Skip(1)) // Skip header
@@ -80,22 +82,18 @@ static void ReadCustomerCSV(List<Customer> cList)
     }
 }
 
-static void ReadOrderCSV(List<Order> oList)
+static void ReadOrderCsv(List<Order> oList)
 {	
     string[] data = File.ReadAllLines("orders.csv");
     foreach (string line in data.Skip(1)) // Skip header
     {
         string[] orderinfo = line.Split(',');
-        int orderID = Convert.ToInt32(orderinfo[0]);
+        int orderId = Convert.ToInt32(orderinfo[0]);
         int memid = Convert.ToInt32(orderinfo[1]);
         DateTime received = DateTime.Parse(orderinfo[2]);
 		DateTime fulfilled = DateTime.Parse(orderinfo[3]);
-        string option = orderinfo[4];
-        int scoops = Convert.ToInt32(orderinfo[5]);
-        bool dipped = Convert.ToBoolean(orderinfo[6]);
-        string waffleFlavour = orderinfo[7];
-        List<Flavour> flavours = new(orderinfo[8], orderinfo[9], orderinfo[10]);
-		list<Toppings> toppings = new(orderinfo[11], orderinfo[12], orderinfo[13], orderinfo[14]);
+        Order order = new(orderId, received);
+        oList.Add(order);
     }
 }
     
@@ -128,11 +126,36 @@ static void DisplayOrder()
 
 }
 //6
-static void ModifyOrder()
+static void ModifyOrder(List<Customer> custList)
 {
-    
+    Console.Write("\r\n----------------Customers-----------------\r\n");
+    ListCustomers(custList);
+    try
+    {
+        bool found = false;
+        Console.Write("Enter member ID: ");
+        int cId = Convert.ToInt32(Console.ReadLine());
+        foreach (Customer customer in custList)
+        {
+            if (cId == customer.Id)
+            {
+                Console.WriteLine("Customer found: " + customer.Name);
+                found = true;
+                break;
+            }
+        }
+        if (found == false)
+        {
+            Console.WriteLine("Customer not found.");
+            return;
+        }
+    }
+    catch(FormatException)
+    {
+        Console.WriteLine("Invalid input. Please enter a valid integer for the member ID.");
+    }
     Console.Write("\r\n---------------- M E N U -----------------\r\n" +
-    "[1] Modify an existing iceream\r\n" +
+    "[1] Modify an existing icecream\r\n" +
     "[2] Add a new icecream\r\n" +
     "[3] Delete an icecream\r\n" +
     "[0] Exit/Cancel\r\n" +
@@ -140,7 +163,7 @@ static void ModifyOrder()
     int option1 = Convert.ToInt32(Console.ReadLine());
     if (option1 == 0)
     {
-        return;
+        
     }
     else if ( option1 == 1)
     {
