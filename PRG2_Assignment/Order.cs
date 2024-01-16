@@ -20,16 +20,13 @@ namespace PRG2_Assignment
         }
         public void ModifyIceCream(int id)
         {
-            if (id == Id)
-            {
-                Console.Write("Option: ");
-                string option = Console.ReadLine();
-                Console.Write("Number of scoops");
-                int scoops = Convert.ToInt32(Console.ReadLine());
-                Console.Write("Flavour: ");
-                string flavour = Console.ReadLine();
-                
-            }
+            foreach (IceCream icecreams in IceCreamList)
+			{
+				int i = 1;
+				Console.Writeline($"[{i}] {icecreams}")
+				i++;
+			}
+			
         }
         public void AddIceCream(IceCream iceCream)
         {

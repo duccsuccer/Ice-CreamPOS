@@ -1,6 +1,8 @@
 ﻿using PRG2_Assignment;
 
 int option;
+List<IceCream> IceCreamList = new();
+List<Order> oList = new();
 List<Customer> customerList = new();
 ReadCSV(customerList);
 while (true)
@@ -64,7 +66,7 @@ static void DisplayMenu()
 
 }
 
-static void ReadCSV(List<Customer> cList)
+static void ReadCustomerCSV(List<Customer> cList)
 {
     string[] data = File.ReadAllLines("customers.csv");
     foreach (string line in data.Skip(1)) // Skip header
@@ -78,6 +80,25 @@ static void ReadCSV(List<Customer> cList)
     }
 }
 
+static void ReadOrderCSV(List<Order> oList)
+{	
+    string[] data = File.ReadAllLines("orders.csv");
+    foreach (string line in data.Skip(1)) // Skip header
+    {
+        string[] orderinfo = line.Split(',');
+        int orderID = Convert.ToInt32(orderinfo[0]);
+        int memid = Convert.ToInt32(orderinfo[1]);
+        DateTime received = DateTime.Parse(orderinfo[2]);
+		DateTime fulfilled = DateTime.Parse(orderinfo[3]);
+        string option = orderinfo[4];
+        int scoops = Convert.ToInt32(orderinfo[5]);
+        bool dipped = Convert.ToBoolean(orderinfo[6]);
+        string waffleFlavour = orderinfo[7];
+        List<Flavour> flavours = new(orderinfo[8], orderinfo[9], orderinfo[10]);
+		list<Toppings> toppings = new(orderinfo[11], orderinfo[12], orderinfo[13], orderinfo[14]);
+    }
+}
+    
 //1
 static void ListCustomers(List<Customer> cList) 
 {
