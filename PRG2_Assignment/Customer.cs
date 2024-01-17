@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PRG2_Assignment
 {
-    internal class Customer : Order
+    internal class Customer
     {
         public string Name { get; set; }
         public int Memberid { get; set; }

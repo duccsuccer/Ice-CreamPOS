@@ -1,11 +1,14 @@
-﻿using PRG2_Assignment;
-
-
+﻿    using PRG2_Assignment;
+using System.Collections.Generic;
+List<Topping> toppingsList = new();
+List<Flavour> flavourList = new();
 List<IceCream> iceCreamList = new();
 List<Order> oList = new();
 List<Customer> customerList = new();
 ReadCustomerCsv(customerList);
 ReadOrderCsv(oList);
+ReadFlavoursCsv(flavourList);
+ReadToppingsCsv(toppingsList);
 while (true)
 {
     int option;
@@ -68,12 +71,23 @@ static void DisplayMenu()
 
 }
 
+static void ReadToppingsCsv(List<Topping> tList)
+{
+    string[] data = File.ReadAllLines("customers.csv");
+    foreach(string line in data.Skip(1)) 
+    {
+        string[] topinfo = line.Split(",");
+        string name = topinfo[0];
+        Topping topping = new Topping(name);
+        tList.Add(topping);
+    }
+}
 static void ReadCustomerCsv(List<Customer> cList)
 {
     string[] data = File.ReadAllLines("customers.csv");
     foreach (string line in data.Skip(1)) // Skip header
     {
-        string[] customers = line.Split(',');
+        string[] customers = line.Split(",");
         string name = customers[0];
         int id = Convert.ToInt32(customers[1]);
         DateTime dob = DateTime.Parse(customers[2]);
@@ -81,7 +95,24 @@ static void ReadCustomerCsv(List<Customer> cList)
         cList.Add(customer);
     }
 }
+static void ReadFlavoursCsv(List<Flavour> fList)
+{
+    string[] data = File.ReadAllLines("flavours.csv");
+    foreach (string line in data.Skip(1))
+    {
+        bool premium = false;
+        string[] flavourinfo = line.Split(",");
+        string name = flavourinfo[0];
+        int cost = Convert.ToInt32(flavourinfo[1]);
+        if (cost == 2)
+        {
+            premium = true;
+        }
+        Flavour flavour = new(name, premium, 1);
+        fList.Add(flavour);
+    }
 
+}
 static void ReadOrderCsv(List<Order> oList)
 {	
     string[] data = File.ReadAllLines("orders.csv");
@@ -128,6 +159,7 @@ static void DisplayOrder()
 //6
 static void ModifyOrder(List<Customer> custList)
 {
+    Customer selectedCustomer = null;
     Console.Write("\r\n----------------Customers-----------------\r\n");
     ListCustomers(custList);
     try
@@ -137,14 +169,14 @@ static void ModifyOrder(List<Customer> custList)
         int cId = Convert.ToInt32(Console.ReadLine());
         foreach (Customer customer in custList)
         {
-            if (cId == customer.Id)
+            if (cId == customer.Memberid)
             {
                 Console.WriteLine("Customer found: " + customer.Name);
-                found = true;
+                selectedCustomer = customer;
                 break;
             }
         }
-        if (found == false)
+        if (selectedCustomer == null)
         {
             Console.WriteLine("Customer not found.");
             return;
@@ -166,6 +198,12 @@ static void ModifyOrder(List<Customer> custList)
         
     }
     else if ( option1 == 1)
+    {
+        Order currentorder = selectedCustomer.CurrentOrder;
+        int orderid = currentorder.Id;
+        currentorder.ModifyIceCream(orderid);
+    }
+    else if (option1 == 2)
     {
         
     }

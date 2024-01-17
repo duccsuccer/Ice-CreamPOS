@@ -15,22 +15,8 @@ namespace PRG2_Assignment
         }
         public override double CalculatePrice()
         {
-            double price = 0;
-            if (Scoops == 1)
-            {
-                price = 4;
-
-            }
-            else if (Scoops == 2)
-            {
-                price = 5.50;
-
-            }
-            else if (Scoops == 3)
-            {
-                price = 6.50;
-            }
-            return price + Toppings.Count;
+            double baseprice = base.CalculatePrice();
+            return baseprice;
         }
         public override string ToString()
         {

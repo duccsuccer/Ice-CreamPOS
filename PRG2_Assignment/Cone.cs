@@ -17,32 +17,13 @@ namespace PRG2_Assignment
         }
         public override double CalculatePrice()
         {
-            double price = 0;
-            if (Scoops == 1) 
+            double baseprice = base.CalculatePrice();
+            if (Dipped == true)
             {
-                price = 4;
-                if (Dipped == true)
-                {
-                    price += 2.0;
-                }
+                baseprice += 2.00;
             }
-            else if (Scoops == 2) 
-            {
-                price = 5.50;
-                if (Dipped == true)
-                {
-                    price += 2.0;
-                }
-            }
-            else if(Scoops == 3)
-            {
-                price = 6.50;
-                if (Dipped == true)
-                {
-                    price += 2.0;
-                }
-            }
-            return price + Toppings.Count;
+
+            return baseprice;
         }           
         public override string ToString()
         {

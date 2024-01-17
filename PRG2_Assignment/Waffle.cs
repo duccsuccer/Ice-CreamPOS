@@ -16,32 +16,13 @@ namespace PRG2_Assignment
         }
         public override double CalculatePrice()
         {
-            double price = 0;
-            if (Scoops == 1)
+            double baseprice = base.CalculatePrice();
+            if (WaffleFlavour == "Red velvet" || WaffleFlavour == "Charcoal" || WaffleFlavour == "Pandan")
             {
-                price = 7.00;
-                if (WaffleFlavour == "Red velvet" || WaffleFlavour == "Charcoal" || WaffleFlavour == "Pandan")
-                {
-                    price = 10.00;
-                }
+                baseprice += 3;
             }
-            else if (Scoops == 2)
-            {
-                price = 8.50;
-                if (WaffleFlavour == "Red velvet" || WaffleFlavour == "Charcoal" || WaffleFlavour == "Pandan")
-                {
-                    price = 11.50;
-                }
-            }
-            else if (Scoops == 3)
-            {
-                price = 9.50;
-                if (WaffleFlavour == "Red velvet" || WaffleFlavour == "Charcoal" || WaffleFlavour == "Pandan")
-                {
-                    price = 12.50;
-                }
-            }
-            return price + Toppings.Count;
+            return baseprice;
+
         }
         public override string ToString()
         {

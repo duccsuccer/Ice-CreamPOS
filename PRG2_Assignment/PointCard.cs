@@ -20,10 +20,8 @@ namespace PRG2_Assignment
 
         }
         public void AddPoints(int points)
-        {
-
-            double total = 2.5;
-            points = (int)Math.Floor(total * 0.72);
+        {   
+            Points += points;
         }
         public void RedeemPoints(int points)
         {
@@ -37,6 +35,7 @@ namespace PRG2_Assignment
         }
         public void Punch()
         {
+            
             PunchCard++;
         }
         public override string ToString()
