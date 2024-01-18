@@ -29,14 +29,15 @@ namespace PRG2_Assignment
             {
                 return;
             }
-
             double discount = points * 0.02;
-            points = 0;
         }
         public void Punch()
-        {
-            
+        {           
             PunchCard++;
+            if(PunchCard == 11)
+            {
+                PunchCard = 0;
+            }
         }
         public override string ToString()
         {

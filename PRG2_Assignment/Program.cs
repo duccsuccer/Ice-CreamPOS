@@ -1,4 +1,4 @@
-﻿    using PRG2_Assignment;
+﻿using PRG2_Assignment;
 using System.Collections.Generic;
 List<Topping> toppingsList = new();
 List<Flavour> flavourList = new();
@@ -197,7 +197,7 @@ static void ModifyOrder(List<Customer> custList)
     {
         
     }
-    else if ( option1 == 1)
+    else if (option1 == 1)
     {
         Order currentorder = selectedCustomer.CurrentOrder;
         int orderid = currentorder.Id;
