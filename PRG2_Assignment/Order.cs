@@ -51,6 +51,7 @@ namespace PRG2_Assignment
             Console.Write("Select an ice cream to modify (enter the number): ");
             int iceCreamIndex = Convert.ToInt32(Console.ReadLine()) - 1;
             IceCream selectedIceCream = IceCreamList[iceCreamIndex];
+            
             //If customer choose to modify ice cream which is a cone...
             if (selectedIceCream.Option is "Cone")
             {

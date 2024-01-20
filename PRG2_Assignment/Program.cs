@@ -42,7 +42,7 @@ while (true)
         }
         else if (option == 6)
         {
-            ListCustomers(customerList);
+            
             
             ModifyOrder(customerList);
         }
@@ -173,10 +173,11 @@ static void ModifyOrder(List<Customer> custList)
             {
                 Console.WriteLine("Customer found: " + customer.Name);
                 selectedCustomer = customer;
+                found = true;
                 break;
             }
         }
-        if (selectedCustomer == null)
+        if (!found)
         {
             Console.WriteLine("Customer not found.");
             return;
@@ -199,9 +200,16 @@ static void ModifyOrder(List<Customer> custList)
     }
     else if (option1 == 1)
     {
-        Order currentorder = selectedCustomer.CurrentOrder;
-        int orderid = currentorder.Id;
-        currentorder.ModifyIceCream(orderid);
+        if (selectedCustomer.CurrentOrder != null)
+        {
+            Order currentorder = selectedCustomer.CurrentOrder;
+            int orderid = currentorder.Id;
+            currentorder.ModifyIceCream(orderid);
+        }
+        else
+        {
+            Console.WriteLine("No current order to modify");
+        }
     }
     else if (option1 == 2)
     {
