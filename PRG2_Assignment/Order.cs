@@ -372,7 +372,7 @@ namespace PRG2_Assignment
         public double CalculateTotal()
         {
             double total = 0;
-            foreach (IceCream iceCream in IceCreamList)
+            foreach (IceCream iceCream in IceCreamList) 
             {
                 total += iceCream.CalculatePrice();
             }
