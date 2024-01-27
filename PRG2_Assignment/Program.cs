@@ -6,7 +6,7 @@ List<IceCream> iceCreamList = new();
 List<Order> oList = new();
 List<Customer> customerList = new();
 ReadCustomerCsv(customerList);
-ReadOrderCsv(oList);
+ReadOrderCsv(oList,customerList);
 ReadFlavoursCsv(flavourList);
 ReadToppingsCsv(toppingsList);
 while (true)
@@ -14,6 +14,7 @@ while (true)
     int option;
     try
     { 
+
         DisplayMenu();
         option = Convert.ToInt32(Console.ReadLine());
         if (option == 0)
@@ -26,7 +27,7 @@ while (true)
         }
         else if (option == 2)
         {
-            ListCurrentOrders();
+            ListCurrentOrders(oList, customerList);
         }
         else if (option == 3)
         {
@@ -42,7 +43,6 @@ while (true)
         }
         else if (option == 6)
         {
-            
             
             ModifyOrder(customerList);
         }
@@ -113,7 +113,7 @@ static void ReadFlavoursCsv(List<Flavour> fList)
     }
 
 }
-static void ReadOrderCsv(List<Order> oList)
+static void ReadOrderCsv(List<Order> oList, List<Customer> customerList)
 {	
     string[] data = File.ReadAllLines("orders.csv");
     foreach (string line in data.Skip(1)) // Skip header
@@ -122,9 +122,20 @@ static void ReadOrderCsv(List<Order> oList)
         int orderId = Convert.ToInt32(orderinfo[0]);
         int memid = Convert.ToInt32(orderinfo[1]);
         DateTime received = DateTime.Parse(orderinfo[2]);
-		DateTime fulfilled = DateTime.Parse(orderinfo[3]);
+        DateTime? fulfilled;
+
+        if (string.IsNullOrEmpty(orderinfo[3]))
+        {
+            fulfilled = null;
+        }
+        else
+        {
+            fulfilled = DateTime.Parse(orderinfo[3]);
+        }
         Order order = new(orderId, received);
         oList.Add(order);
+
+       
     }
 }
     
@@ -137,9 +148,36 @@ static void ListCustomers(List<Customer> cList)
     }
 }
 //2
-static void ListCurrentOrders()
+static void ListCurrentOrders(List<Order> oList, List<Customer> customerList)
 {
-    
+
+    Console.WriteLine("\r\n---------------- Current Orders -----------------\r\n");
+
+    foreach (Order order in oList)
+    {
+        if (order.Timefufilled == null)
+        {
+            Console.WriteLine(order.ToString());
+
+            // Find the customer for the order
+            Customer customer = customerList.Find(c => c.Memberid == order.Memberid);
+            if (customer != null)
+            {
+                Console.WriteLine($"Customer: {customer.Name}");
+            }
+
+            Console.WriteLine($"Total Price: {order.CalculateTotal():C2}");
+            Console.WriteLine("Ice Creams in Order:");
+
+            foreach (IceCream iceCream in order.IceCreamList)
+            {
+                Console.WriteLine($"  - {iceCream}");
+            }
+
+            Console.WriteLine("------------------------------------------\r\n");
+        }
+    }
+
 }
 //3
 static void CustomerReg()
@@ -156,8 +194,8 @@ static void DisplayOrder()
 {
 
 }
-/*/6
- * WORKING IN PROGRESS DONT MARK AH
+//6
+ //WORKING IN PROGRESS DONT MARK AH
 static void ModifyOrder(List<Customer> custList)
 {
     Customer selectedCustomer = null;
@@ -218,4 +256,3 @@ static void ModifyOrder(List<Customer> custList)
     }
 
 }
-*/
