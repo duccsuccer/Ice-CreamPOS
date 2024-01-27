@@ -21,7 +21,7 @@ while (true)
         {
             break;
         }
-        else if (option == 1)
+        if (option == 1)
         {
             ListCustomers(customerList);
         }
@@ -31,7 +31,7 @@ while (true)
         }
         else if (option == 3)
         {
-            CustomerReg();
+            CustomerReg(customerList);
         }
         else if (option == 4)
         {
@@ -134,8 +134,6 @@ static void ReadOrderCsv(List<Order> oList, List<Customer> customerList)
         }
         Order order = new(orderId, received);
         oList.Add(order);
-
-       
     }
 }
     
@@ -150,11 +148,50 @@ static void ListCustomers(List<Customer> cList)
 //2
 static void ListCurrentOrders(List<Order> oList, List<Customer> customerList)
 {
+    List<IceCream> icList = new();
+    List<Flavour> flavours = new();
+    List<Topping> toppings = new();
+    string[] data = File.ReadAllLines("orders.csv");
+    foreach (string line in data.Skip(1)) // Skip header
+    {
+        string[] orderinfo = line.Split(',');
+        string option = orderinfo[4];
+        int scoops = Convert.ToInt32(orderinfo[5]);
+        bool dipped = Convert.ToBoolean(orderinfo[6]);
+        string waffleflav = orderinfo[7];
+        string f1 = orderinfo[8];
+        string f2 = orderinfo[9];
+        string f3 = orderinfo[10];
+        Topping t1 = new(orderinfo[11]);
+        Topping t2 = new(orderinfo[12]);
+        Topping t3 = new(orderinfo[13]);
+        Topping t4 = new(orderinfo[14]);
+        toppings.Add(t1);
+        toppings.Add(t2);
+        toppings.Add(t3);
+        toppings.Add(t4);
+        if (option.ToLower() == "cup")
+        {
+            Cup ic = new(option, scoops, flavours, toppings);
+            icList.Add(ic);
+        }
+        else if(option.ToLower() == "waffle")
+        {
+            Waffle ic = new(option, scoops, flavours, toppings, waffleflav);
+            icList.Add(ic);
+        }
+        else if (option.ToLower() == "cone")
+        {
+            Cone ic = new(option, scoops, flavours, toppings, dipped);
+            icList.Add(ic);
+        }
+    }
 
     Console.WriteLine("\r\n---------------- Current Orders -----------------\r\n");
 
     foreach (Order order in oList)
     {
+        icList = order.IceCreamList;
         if (order.Timefufilled == null)
         {
             Console.WriteLine(order.ToString());
@@ -180,9 +217,18 @@ static void ListCurrentOrders(List<Order> oList, List<Customer> customerList)
 
 }
 //3
-static void CustomerReg()
+static void CustomerReg(List<Customer> customerList)
 {
-
+    Random random = new();
+    Console.Write("Name: ");
+    string name = Console.ReadLine();
+    int id = random.Next(100000, 999999);
+    Console.Write("Date of Birth(dd//mm//yyyy): ");
+    DateTime dob = Convert.ToDateTime(Console.ReadLine());
+    Customer newCustomer = new(name, id, dob);
+    string customerInfo = $"{name},{id},{dob.Date}";
+    customerList.Add(newCustomer);
+    File.AppendAllText("customers.csv", customerInfo);
 }
 //4
 static void CreateOrder()
