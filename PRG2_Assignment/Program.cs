@@ -35,7 +35,7 @@ while (true)
         }
         else if (option == 4)
         {
-            CreateOrder();
+            CreateOrder(customerList, oList,  flavourList,  toppingsList);
         }
         else if (option == 5)
         {
@@ -231,9 +231,107 @@ static void CustomerReg(List<Customer> customerList)
     File.AppendAllText("customers.csv", customerInfo);
 }
 //4
-static void CreateOrder()
+static void CreateOrder(List<Customer> customerList, List<Order> oList, List<Flavour> flavourList, List<Topping> toppingsList)
 {
+    Console.Write("Select a customer (Enter Member ID): ");
+    int memberId = Convert.ToInt32(Console.ReadLine());
 
+    // Find the selected customer
+    Customer selectedCustomer = customerList.Find(c => c.Memberid == memberId);
+
+    if (selectedCustomer == null)
+    {
+        Console.WriteLine("Customer not found.");
+        return;
+    }
+
+    // Create a new order for the selected customer
+    Order newOrder = new Order();
+    newOrder.Id = oList.Count + 1; // Generate a new order ID
+    newOrder.Timereceived = DateTime.Now;
+    selectedCustomer.CurrentOrder = newOrder; // Link the new order to the customer
+
+    do
+    {
+        // Prompt user to enter ice cream order details
+        Console.Write("Enter option (e.g., cup, cone, waffle): ");
+        string option = Console.ReadLine();
+
+        Console.Write("Enter number of scoops: ");
+        int scoops = Convert.ToInt32(Console.ReadLine());
+
+        List<Flavour> selectedFlavours = new List<Flavour>();
+        for (int i = 1; i <= scoops; i++)
+        {
+            Console.Write($"Enter flavour for scoop {i}: ");
+            string flavourName = Console.ReadLine();
+            Flavour selectedFlavour = null;
+
+            foreach (Flavour flavour in flavourList)
+            {
+                if (flavour.Ftype.ToLower() == flavourName.ToLower())
+                {
+                    selectedFlavour = flavour;
+                    break; // Exit the loop once a match is found
+                }
+            }
+
+            selectedFlavours.Add(selectedFlavour);
+        }
+
+        List<Topping> selectedToppings = new List<Topping>();
+        Console.Write("Do you want toppings? (Y/N): ");
+        if (Console.ReadLine().ToUpper() == "Y")
+        {
+            Console.Write("Enter number of toppings: ");
+            int numToppings = Convert.ToInt32(Console.ReadLine());
+
+            for (int i = 1; i <= numToppings; i++)
+            {
+                Console.Write($"Enter topping {i}: ");
+                string toppingName = Console.ReadLine();
+                Topping selectedtopping = null;
+
+                foreach (Topping topping in toppingsList)
+                {
+                    if (topping.Toptype.ToLower() == toppingName.ToLower())
+                    {
+                        selectedtopping = topping;
+                        break; // Exit the loop once a match is found
+                    }
+                }
+
+                selectedToppings.Add(selectedtopping);
+            }
+            
+           }
+        
+
+        // Create the ice cream object with the entered information
+        IceCream iceCream = null;
+        if (option.ToLower() == "cup")
+        {
+            iceCream = new Cup(option, scoops, selectedFlavours, selectedToppings);
+        }
+        else if (option.ToLower() == "cone")
+        {
+            iceCream = new Cone(option, scoops, selectedFlavours, selectedToppings, false);
+        }
+        else if (option.ToLower() == "waffle")
+        {
+            iceCream = new Waffle(option, scoops, selectedFlavours, selectedToppings, "standard");
+        }
+
+        // Add the ice cream to the order
+        newOrder.AddIceCream(iceCream);
+
+        Console.Write("Add another ice cream to the order? (Y/N): ");
+    } while (Console.ReadLine().ToUpper() == "Y");
+
+    // dont know how to add to queue
+
+    Console.WriteLine("Order has been made successfully.");
+    
 }
 //5
 static void DisplayOrder()

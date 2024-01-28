@@ -17,6 +17,7 @@ namespace PRG2_Assignment
         {
             Points = points;
             PunchCard = punchCard;
+            Tier = "Ordinary";
 
         }
         public void AddPoints(int points)
