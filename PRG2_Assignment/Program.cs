@@ -223,7 +223,7 @@ static void CustomerReg(List<Customer> customerList)
     Console.Write("Name: ");
     string name = Console.ReadLine();
     int id = random.Next(100000, 999999);
-    Console.Write("Date of Birth(dd//mm//yyyy): ");
+    Console.Write("Date of Birth(dd/mm/yyyy): ");
     DateTime dob = Convert.ToDateTime(Console.ReadLine());
     Customer newCustomer = new(name, id, dob);
     string customerInfo = $"{name},{id},{dob.Date}";
