@@ -157,7 +157,6 @@ static void ListCurrentOrders(List<Order> oList, List<Customer> customerList)
         string[] orderinfo = line.Split(',');
         string option = orderinfo[4];
         int scoops = Convert.ToInt32(orderinfo[5]);
-        bool dipped = Convert.ToBoolean(orderinfo[6]);
         string waffleflav = orderinfo[7];
         string f1 = orderinfo[8];
         string f2 = orderinfo[9];
@@ -170,18 +169,19 @@ static void ListCurrentOrders(List<Order> oList, List<Customer> customerList)
         toppings.Add(t2);
         toppings.Add(t3);
         toppings.Add(t4);
-        if (option.ToLower() == "cup")
+        if (option == "Cup")
         {
             Cup ic = new(option, scoops, flavours, toppings);
             icList.Add(ic);
         }
-        else if(option.ToLower() == "waffle")
+        else if(option == "Waffle")
         {
             Waffle ic = new(option, scoops, flavours, toppings, waffleflav);
             icList.Add(ic);
         }
-        else if (option.ToLower() == "cone")
+        else if (option == "Cone")
         {
+            bool dipped = Convert.ToBoolean(orderinfo[6]);
             Cone ic = new(option, scoops, flavours, toppings, dipped);
             icList.Add(ic);
         }
