@@ -12,7 +12,7 @@ namespace PRG2_Assignment
         public int Memberid { get; set; }
         public DateTime Dob { get; set; }
         public Order CurrentOrder { get; set; }
-        public List<Order> Orderhistory { get; set; } = new();
+        public List<Order> OrderHistory { get; set; } = new();
         public PointCard Rewards { get; set; }
         public Customer() { }
         public Customer(string name, int memberid,DateTime dob)

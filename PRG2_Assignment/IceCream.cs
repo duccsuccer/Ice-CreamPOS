@@ -28,19 +28,19 @@ namespace PRG2_Assignment
         {
             double price = 0;
 
-            if (Option == "cup")
+            if (Option == "Cup")
             {
                 if (Scoops == 1) price = 4.00;
                 else if (Scoops == 2) price = 5.50;
                 else if (Scoops == 3) price = 6.50;
             }
-            else if (Option == "cone")
+            else if (Option == "Cone")
             {
                 if (Scoops == 1) price = 4.00;
                 else if (Scoops == 2) price = 5.50;
                 else if (Scoops == 3) price = 6.50;
             }
-            else if (Option == "waffle")
+            else if (Option == "Waffle")
             {
                 if (Scoops == 1) price = 7.00;
                 else if (Scoops == 2) price = 8.50;
@@ -59,7 +59,10 @@ namespace PRG2_Assignment
         }
         public override string ToString()
         {
-            return $"Option : {Option}, Scoops: {Scoops}, Flavours: {Flavours}, Toppings: {Toppings}";
+            string flavors = string.Join(", ", Flavours.Select(flavour => flavour.Ftype));
+            string toppings = string.Join(", ", Toppings.Select(topping => topping.Toptype));
+
+            return $"Option: {Option}, Scoops: {Scoops}, Flavours: {flavors}, Toppings: {toppings} ";
         }
 
     }

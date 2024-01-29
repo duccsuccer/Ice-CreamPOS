@@ -13,7 +13,10 @@ namespace PRG2_Assignment
         public DateTime Timereceived { get; set; }
         public DateTime? Timefufilled {  get; set; }
         public List<IceCream> IceCreamList { get; set; } = new();
-        public Order() { }
+        public Order() 
+        {
+            IceCreamList = new List<IceCream>();
+         }
         public Order(int id, DateTime timereceived)
         {
             Id = id;

@@ -17,7 +17,7 @@ namespace PRG2_Assignment
         public override double CalculatePrice()
         {
             double baseprice = base.CalculatePrice();
-            if (WaffleFlavour == "Red velvet" || WaffleFlavour == "Charcoal" || WaffleFlavour == "Pandan")
+            if (WaffleFlavour == "Red Velvet" || WaffleFlavour == "Charcoal" || WaffleFlavour == "Pandan")
             {
                 baseprice += 3;
             }
@@ -26,7 +26,7 @@ namespace PRG2_Assignment
         }
         public override string ToString()
         {
-            return base.ToString() + $"Price : {CalculatePrice()}";
+            return base.ToString() + $"Price : {CalculatePrice()}, WaffleType :{ WaffleFlavour}";
         }
     }
 }

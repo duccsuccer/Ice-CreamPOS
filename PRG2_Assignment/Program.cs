@@ -6,7 +6,6 @@ List<IceCream> iceCreamList = new();
 List<Order> oList = new();
 List<Customer> customerList = new();
 ReadCustomerCsv(customerList);
-ReadOrderCsv(oList,customerList);
 ReadFlavoursCsv(flavourList);
 ReadToppingsCsv(toppingsList);
 while (true)
@@ -27,7 +26,7 @@ while (true)
         }
         else if (option == 2)
         {
-            ListCurrentOrders(oList, customerList);
+            ListCurrentOrders(customerList);
         }
         else if (option == 3)
         {
@@ -39,7 +38,7 @@ while (true)
         }
         else if (option == 5)
         {
-            DisplayOrder();
+            DisplayOrder(customerList);
         }
         else if (option == 6)
         {
@@ -100,24 +99,51 @@ static void ReadFlavoursCsv(List<Flavour> fList)
     string[] data = File.ReadAllLines("flavours.csv");
     foreach (string line in data.Skip(1))
     {
-        bool premium = false;
+        
         string[] flavourinfo = line.Split(",");
         string name = flavourinfo[0];
         int cost = Convert.ToInt32(flavourinfo[1]);
-        if (cost == 2)
-        {
-            premium = true;
-        }
+        bool premium = (cost == 2);
         Flavour flavour = new(name, premium, 1);
         fList.Add(flavour);
     }
 
 }
-static void ReadOrderCsv(List<Order> oList, List<Customer> customerList)
-{	
+//1--------------------------------------------------------------------------------------------------------------------------------------------------------
+static void ListCustomers(List<Customer> cList) 
+{
+    foreach (Customer customer in cList)
+    {
+        Console.WriteLine(customer.ToString());
+    }
+}
+//2-----------------------------------------------------------------------------------------------------------------------------------------------------------
+static void ListCurrentOrders(List<Customer> customerList)
+{
+    bool ispremium = false;
+    List<Flavour> fList = new();
+    string[] fdata = File.ReadAllLines("flavours.csv");
+    foreach (string line in fdata.Skip(1))
+    {
+        string[] flavourinfo = line.Split(",");
+        string name = flavourinfo[0];
+        int cost = Convert.ToInt32(flavourinfo[1]);
+        if (cost == 2)
+        {
+            ispremium = true;
+        }
+        Flavour flavour = new(name, ispremium, 1);
+        fList.Add(flavour);
+    }
+
+    List<Order> oList = new();
+    List<IceCream> icList = new();
+    
     string[] data = File.ReadAllLines("orders.csv");
     foreach (string line in data.Skip(1)) // Skip header
     {
+        List<Flavour> flavours = new();
+        List<Topping> toppings = new();
         string[] orderinfo = line.Split(',');
         int orderId = Convert.ToInt32(orderinfo[0]);
         int memid = Convert.ToInt32(orderinfo[1]);
@@ -134,33 +160,35 @@ static void ReadOrderCsv(List<Order> oList, List<Customer> customerList)
         }
         Order order = new(orderId, received);
         oList.Add(order);
-    }
-}
-    
-//1
-static void ListCustomers(List<Customer> cList) 
-{
-    foreach (Customer customer in cList)
-    {
-        Console.WriteLine(customer.ToString());
-    }
-}
-//2
-static void ListCurrentOrders(List<Order> oList, List<Customer> customerList)
-{
-    List<IceCream> icList = new();
-    List<Flavour> flavours = new();
-    List<Topping> toppings = new();
-    string[] data = File.ReadAllLines("orders.csv");
-    foreach (string line in data.Skip(1)) // Skip header
-    {
-        string[] orderinfo = line.Split(',');
+        bool prem = false;
         string option = orderinfo[4];
         int scoops = Convert.ToInt32(orderinfo[5]);
         string waffleflav = orderinfo[7];
-        string f1 = orderinfo[8];
-        string f2 = orderinfo[9];
-        string f3 = orderinfo[10];
+        string ft1 = orderinfo[8];
+        string ft2 = orderinfo[9];
+        string ft3 = orderinfo[10];
+        foreach (Flavour flavour in fList)
+        {
+            if (flavour.Ftype == ft1 && flavour.Premium == true)
+            {
+                prem = true;
+            }
+            if (flavour.Ftype == ft2 && flavour.Premium == true)
+            {
+                prem = true;
+            }
+            if (flavour.Ftype == ft3 && flavour.Premium == true)
+            {
+                prem = true;
+            }
+        }
+       
+        Flavour f1 = new(ft1, prem, 1);
+        Flavour f2 = new(ft2, prem, 1);
+        Flavour f3 = new(ft3, prem, 1);
+        flavours.Add(f1);
+        flavours.Add(f2);
+        flavours.Add(f3);
         Topping t1 = new(orderinfo[11]);
         Topping t2 = new(orderinfo[12]);
         Topping t3 = new(orderinfo[13]);
@@ -169,12 +197,19 @@ static void ListCurrentOrders(List<Order> oList, List<Customer> customerList)
         toppings.Add(t2);
         toppings.Add(t3);
         toppings.Add(t4);
+        // Filter toppings with non-empty Toptype
+        List<Topping> filteredToppings = toppings.Where(t => !string.IsNullOrEmpty(t.Toptype)).ToList();
+        toppings = filteredToppings;
+
+        // Filter flavours with non-empty Ftype
+        List<Flavour> filteredFlavours = flavours.Where(f => !string.IsNullOrEmpty(f.Ftype)).ToList();
+        flavours = filteredFlavours;
         if (option == "Cup")
         {
             Cup ic = new(option, scoops, flavours, toppings);
             icList.Add(ic);
         }
-        else if(option == "Waffle")
+        else if (option == "Waffle")
         {
             Waffle ic = new(option, scoops, flavours, toppings, waffleflav);
             icList.Add(ic);
@@ -184,14 +219,14 @@ static void ListCurrentOrders(List<Order> oList, List<Customer> customerList)
             bool dipped = Convert.ToBoolean(orderinfo[6]);
             Cone ic = new(option, scoops, flavours, toppings, dipped);
             icList.Add(ic);
-        }
+        } 
     }
-
+        
     Console.WriteLine("\r\n---------------- Current Orders -----------------\r\n");
-
+    int i = 0;
     foreach (Order order in oList)
     {
-        icList = order.IceCreamList;
+        
         if (order.Timefufilled == null)
         {
             Console.WriteLine(order.ToString());
@@ -201,22 +236,17 @@ static void ListCurrentOrders(List<Order> oList, List<Customer> customerList)
             if (customer != null)
             {
                 Console.WriteLine($"Customer: {customer.Name}");
+                customer.OrderHistory.Add(order);
             }
-
-            Console.WriteLine($"Total Price: {order.CalculateTotal():C2}");
+            Console.WriteLine($"Total Price: {icList[i].CalculatePrice():C2}");
             Console.WriteLine("Ice Creams in Order:");
-
-            foreach (IceCream iceCream in order.IceCreamList)
-            {
-                Console.WriteLine($"  - {iceCream}");
-            }
-
+            Console.WriteLine($" - {icList[i].ToString()}");
+            i++;
             Console.WriteLine("------------------------------------------\r\n");
         }
     }
-
 }
-//3
+//3 ------------------------------------------------------------------------------------------------------------------------------------------------------
 static void CustomerReg(List<Customer> customerList)
 {
     Random random = new();
@@ -226,13 +256,15 @@ static void CustomerReg(List<Customer> customerList)
     Console.Write("Date of Birth(dd/mm/yyyy): ");
     DateTime dob = Convert.ToDateTime(Console.ReadLine());
     Customer newCustomer = new(name, id, dob);
-    string customerInfo = $"{name},{id},{dob.Date}";
+    string customerInfo = $"\n{name},{id},{dob.Date}";
     customerList.Add(newCustomer);
     File.AppendAllText("customers.csv", customerInfo);
 }
-//4
+//4 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 static void CreateOrder(List<Customer> customerList, List<Order> oList, List<Flavour> flavourList, List<Topping> toppingsList)
 {
+    Queue<Order> goldMemberOrderQueue = new Queue<Order>();
+    Queue<Order> regularOrderQueue = new Queue<Order>();
     Console.Write("Select a customer (Enter Member ID): ");
     int memberId = Convert.ToInt32(Console.ReadLine());
 
@@ -303,9 +335,9 @@ static void CreateOrder(List<Customer> customerList, List<Order> oList, List<Fla
 
                 selectedToppings.Add(selectedtopping);
             }
-            
-           }
-        
+
+        }
+
 
         // Create the ice cream object with the entered information
         IceCream iceCream = null;
@@ -329,17 +361,162 @@ static void CreateOrder(List<Customer> customerList, List<Order> oList, List<Fla
     } while (Console.ReadLine().ToUpper() == "Y");
 
     // dont know how to add to queue
-
+    if (selectedCustomer.Rewards.Tier == "Gold")
+    {
+        // Append the order to the gold members order queue
+        goldMemberOrderQueue.Enqueue(newOrder);
+    }
+    else
+    {
+        // Append the order to the regular order queue
+        regularOrderQueue.Enqueue(newOrder);
+    }
     Console.WriteLine("Order has been made successfully.");
-    
+
 }
-//5
-static void DisplayOrder()
+//5----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+static void DisplayOrder(List<Customer> customerList)
 {
 
-}
-//6
- //WORKING IN PROGRESS DONT MARK AH
+    bool ispremium = false;
+    List<Flavour> fList = new();
+    string[] fdata = File.ReadAllLines("flavours.csv");
+    foreach (string line in fdata.Skip(1))
+    {
+        string[] flavourinfo = line.Split(",");
+        string name = flavourinfo[0];
+        int cost = Convert.ToInt32(flavourinfo[1]);
+        if (cost == 2)
+        {
+            ispremium = true;
+        }
+        Flavour flavour = new(name, ispremium, 1);
+        fList.Add(flavour);
+    }
+
+    List<Order> oList = new();
+    List<IceCream> icList = new();
+
+    string[] data = File.ReadAllLines("orders.csv");
+    foreach (string line in data.Skip(1)) // Skip header
+    {
+        List<Flavour> flavours = new();
+        List<Topping> toppings = new();
+        string[] orderinfo = line.Split(',');
+        int orderId = Convert.ToInt32(orderinfo[0]);
+        int memid = Convert.ToInt32(orderinfo[1]);
+        DateTime received = DateTime.Parse(orderinfo[2]);
+        DateTime? fulfilled;
+
+        if (string.IsNullOrEmpty(orderinfo[3]))
+        {
+            fulfilled = null;
+        }
+        else
+        {
+            fulfilled = DateTime.Parse(orderinfo[3]);
+        }
+        Order order = new(orderId, received);
+        oList.Add(order);
+        bool prem = false;
+        string option = orderinfo[4];
+        int scoops = Convert.ToInt32(orderinfo[5]);
+        string waffleflav = orderinfo[7];
+        string ft1 = orderinfo[8];
+        string ft2 = orderinfo[9];
+        string ft3 = orderinfo[10];
+        foreach (Flavour flavour in fList)
+        {
+            if (flavour.Ftype == ft1 && flavour.Premium == true)
+            {
+                prem = true;
+            }
+            if (flavour.Ftype == ft2 && flavour.Premium == true)
+            {
+                prem = true;
+            }
+            if (flavour.Ftype == ft3 && flavour.Premium == true)
+            {
+                prem = true;
+            }
+        }
+
+        Flavour f1 = new(ft1, prem, 1);
+        Flavour f2 = new(ft2, prem, 1);
+        Flavour f3 = new(ft3, prem, 1);
+        flavours.Add(f1);
+        flavours.Add(f2);
+        flavours.Add(f3);
+        Topping t1 = new(orderinfo[11]);
+        Topping t2 = new(orderinfo[12]);
+        Topping t3 = new(orderinfo[13]);
+        Topping t4 = new(orderinfo[14]);
+        toppings.Add(t1);
+        toppings.Add(t2);
+        toppings.Add(t3);
+        toppings.Add(t4);
+        // Filter toppings with non-empty Toptype
+        List<Topping> filteredToppings = toppings.Where(t => !string.IsNullOrEmpty(t.Toptype)).ToList();
+        toppings = filteredToppings;
+
+        // Filter flavours with non-empty Ftype
+        List<Flavour> filteredFlavours = flavours.Where(f => !string.IsNullOrEmpty(f.Ftype)).ToList();
+        flavours = filteredFlavours;
+        if (option == "Cup")
+        {
+            Cup ic = new(option, scoops, flavours, toppings);
+            icList.Add(ic);
+        }
+        else if (option == "Waffle")
+        {
+            Waffle ic = new(option, scoops, flavours, toppings, waffleflav);
+            icList.Add(ic);
+        }
+        else if (option == "Cone")
+        {
+            bool dipped = Convert.ToBoolean(orderinfo[6]);
+            Cone ic = new(option, scoops, flavours, toppings, dipped);
+            icList.Add(ic);
+        }
+
+    }
+    Console.WriteLine("\r\n---------------- Customers -----------------\r\n");
+        ListCustomers(customerList);
+
+        try
+        {
+            Console.Write("Enter member ID to display orders: ");
+            int memberId = Convert.ToInt32(Console.ReadLine());
+
+            
+
+            // Find the selected customer
+            Customer selectedCustomer = customerList.Find(c => c.Memberid == memberId);
+            foreach (Order orders in oList)
+            {
+
+                if (orders.Timefufilled == null)
+                {
+                    Console.WriteLine(orders.ToString());
+
+                    // Find the customer for the order
+                    Customer customer = customerList.Find(c => c.Memberid == memberId);
+                    if (customer != null)
+                    {
+                        Console.WriteLine($"Customer: {customer.Name}");
+                        customer.OrderHistory.Add(orders);
+                    }
+                }
+            }
+
+        }
+        catch (FormatException)
+        {
+            Console.WriteLine("Invalid input. Please enter a valid integer for the member ID.");
+        }
+    }
+    //6
+    //WORKING IN PROGRESS DONT MARK AH --------------------------------------------------------------------------------------------------------
 static void ModifyOrder(List<Customer> custList)
 {
     Customer selectedCustomer = null;
@@ -366,7 +543,7 @@ static void ModifyOrder(List<Customer> custList)
             return;
         }
     }
-    catch(FormatException)
+    catch (FormatException)
     {
         Console.WriteLine("Invalid input. Please enter a valid integer for the member ID.");
     }
@@ -379,7 +556,7 @@ static void ModifyOrder(List<Customer> custList)
     int option1 = Convert.ToInt32(Console.ReadLine());
     if (option1 == 0)
     {
-        
+
     }
     else if (option1 == 1)
     {
@@ -396,7 +573,16 @@ static void ModifyOrder(List<Customer> custList)
     }
     else if (option1 == 2)
     {
-        
+
+    }
+    else if (option1 == 3)
+    {
+
+    }
+    else if (option1 == 0)
+    {
+
     }
 
 }
+
