@@ -352,8 +352,65 @@ static void CreateOrder(List<Customer> customerList, List<Order> oList, List<Fla
         if (option.ToLower() == "cup")
         {
             string writer = "";
+            string flavors = "";
+            string toppings = "";
             iceCream = new Cup("Cup", scoops, selectedFlavours, selectedToppings);
-            
+            writer += $"{4 + 1},";
+            if (iceCream.Flavours.Count == 1)
+            {
+                writer += $"{selectedCustomer.Memberid},{DateTime.Now.ToString("dd/MM/yyyy HH:mm")},{DateTime.Now.ToString("dd/MM/yyyy")},{"Cup"},{scoops},,,{selectedFlavours[0].Ftype},,,";
+
+            }
+            else if (iceCream.Flavours.Count == 2)
+            {
+
+
+                writer += $"{selectedCustomer.Memberid},{DateTime.Now.ToString("dd/MM/yyyy HH:mm")},{DateTime.Now.ToString("dd/MM/yyyy")},{"Cup"},{scoops},,,{selectedFlavours[0].Ftype},{selectedFlavours[1].Ftype},,";
+
+            }
+            else if (selectedFlavours.Count == 3)
+            {
+
+                writer += $"{selectedCustomer.Memberid},{DateTime.Now.ToString("dd/MM/yyyy HH:mm")},{DateTime.Now.ToString("dd/MM/yyyy")},{"Cup"},{scoops},,,{selectedFlavours[0].Ftype},{selectedFlavours[1].Ftype},{selectedFlavours[2].Ftype},";
+
+            }
+            if (selectedFlavours.Count == 0)
+            {
+
+                writer += $",,,";
+
+            }
+            if (selectedToppings.Count == 0)
+            {
+                writer += $",,,";
+            }
+            else if (selectedToppings.Count == 1)
+            {
+                writer += $"{selectedToppings[0].Toptype},,,";
+            }
+            else if (selectedToppings.Count == 2)
+            {
+
+                writer += $"{selectedToppings[0].Toptype},{selectedToppings[1].Toptype},,";
+
+            }
+            else if (selectedToppings.Count == 3)
+            {
+
+                writer += $"{selectedToppings[0].Toptype},{selectedToppings[1].Toptype},{selectedToppings[2].Toptype},";
+
+            }
+            else if (selectedToppings.Count == 4)
+            {
+
+
+                writer += $"{selectedToppings[0].Toptype},{selectedToppings[1].Toptype},{selectedToppings[2].Toptype},{selectedToppings[3].Toptype}";
+
+            }
+
+
+            File.AppendAllText("orders.csv", $"\n{writer}");
+
         }
         
         else if (option.ToLower() == "cone")
@@ -426,6 +483,7 @@ static void CreateOrder(List<Customer> customerList, List<Order> oList, List<Fla
 
         else if (option.ToLower() == "waffle")
         {
+            string writer = "";
             string flavors = "";
             string toppings = "";
             List<string> waffleflavours = new();
@@ -452,13 +510,61 @@ static void CreateOrder(List<Customer> customerList, List<Order> oList, List<Fla
                 }
             }
             iceCream = new Waffle("Waffle", scoops, selectedFlavours, selectedToppings, select);
+            writer += $"{4 + 1},";
+            if (iceCream.Flavours.Count == 1)
+            {
+                writer += $"{selectedCustomer.Memberid},{DateTime.Now.ToString("dd/MM/yyyy HH:mm")},{DateTime.Now.ToString("dd/MM/yyyy")},{"Waffle"},{scoops},,{select},{selectedFlavours[0].Ftype},,,";
+
+            }
+            else if (iceCream.Flavours.Count == 2)
+            {
+
+
+                writer += $"{selectedCustomer.Memberid},{DateTime.Now.ToString("dd/MM/yyyy HH:mm")},{DateTime.Now.ToString("dd/MM/yyyy")},{"Waffle"},{scoops},,{select},{selectedFlavours[0].Ftype},{selectedFlavours[1].Ftype},,";
+
+            }
+            else if (selectedFlavours.Count == 3)
+            {
+
+                writer += $"{selectedCustomer.Memberid},{DateTime.Now.ToString("dd/MM/yyyy HH:mm")},{DateTime.Now.ToString("dd/MM/yyyy")},{"Waffle"},{scoops},,{select},{selectedFlavours[0].Ftype},{selectedFlavours[1].Ftype},{selectedFlavours[2].Ftype},";
+
+            }
+            if (selectedFlavours.Count == 0)
+            {
+
+                writer += $",,,";
+
+            }
             if (selectedToppings.Count == 0)
             {
-                File.AppendAllText("orders.csv", $"\n{newOrder.Id},{selectedCustomer.Memberid},{newOrder.Timereceived},,{option},{scoops},,{select},{flavors},,,{toppings},,,,");
+                writer += $",,,";
             }
-            flavors = string.Join(", ", selectedFlavours.Select(flavour => flavour.Ftype));
-            toppings = string.Join(", ", selectedToppings.Select(topping => topping.Toptype));
-            File.AppendAllText("orders.csv", $"\n{newOrder.Id},{selectedCustomer.Memberid},{newOrder.Timereceived},,{option},{scoops},,{select},{flavors},{toppings}");
+            else if (selectedToppings.Count == 1)
+            {
+                writer += $"{selectedToppings[0].Toptype},,,";
+            }
+            else if (selectedToppings.Count == 2)
+            {
+
+                writer += $"{selectedToppings[0].Toptype},{selectedToppings[1].Toptype},,";
+
+            }
+            else if (selectedToppings.Count == 3)
+            {
+
+                writer += $"{selectedToppings[0].Toptype},{selectedToppings[1].Toptype},{selectedToppings[2].Toptype},";
+
+            }
+            else if (selectedToppings.Count == 4)
+            {
+
+
+                writer += $"{selectedToppings[0].Toptype},{selectedToppings[1].Toptype},{selectedToppings[2].Toptype},{selectedToppings[3].Toptype}";
+
+            }
+
+
+            File.AppendAllText("orders.csv", $"\n{writer}");
         }
         // Add the ice cream to the order
         newOrder.AddIceCream(iceCream);
