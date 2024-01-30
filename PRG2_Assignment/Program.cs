@@ -351,22 +351,14 @@ static void CreateOrder(List<Customer> customerList, List<Order> oList, List<Fla
         IceCream iceCream = null;
         if (option.ToLower() == "cup")
         {
-            string flavors = "";
-            string toppings = "";
+            string writer = "";
             iceCream = new Cup("Cup", scoops, selectedFlavours, selectedToppings);
             
-            if (selectedToppings.Count == 0)
-            {
-                File.AppendAllText("orders.csv", $"\n{newOrder.Id},{selectedCustomer.Memberid},{newOrder.Timereceived},,{option},{scoops},,,{flavors},,,{toppings},,,,");
-            }
-            flavors = string.Join(", ", selectedFlavours.Select(flavour => flavour.Ftype));
-            toppings = string.Join(", ", selectedToppings.Select(topping => topping.Toptype));
-            
-
         }
-        File.AppendAllText("orders.csv", $"\n{newOrder.Id},{selectedCustomer.Memberid},{newOrder.Timereceived},,{option},{scoops},,,{flavors},{toppings}");
+        
         else if (option.ToLower() == "cone")
         {
+            string writer = "";
             string flavors = "";
             string toppings = "";
             bool dipped = false;
@@ -374,17 +366,64 @@ static void CreateOrder(List<Customer> customerList, List<Order> oList, List<Fla
             string yesno = Console.ReadLine();
             if (yesno.ToUpper() == "Y") { dipped = true; }
             iceCream = new Cone("Cone", scoops, selectedFlavours, selectedToppings, dipped);
+            writer += $"{4 + 1},";
+            if (iceCream.Flavours.Count == 1)
+            {
+                writer += $"{selectedCustomer.Memberid},{DateTime.Now.ToString("dd/MM/yyyy HH:mm")},{DateTime.Now.ToString("dd/MM/yyyy")},{"Cone"},{scoops},{dipped},,{selectedFlavours[0].Ftype},,,";
+
+            }
+            else if (iceCream.Flavours.Count == 2)
+            {
+
+
+                writer += $"{selectedCustomer.Memberid},{DateTime.Now.ToString("dd/MM/yyyy HH:mm")},{DateTime.Now.ToString("dd/MM/yyyy")},{"Cone"},{scoops},{dipped},,{selectedFlavours[0].Ftype},{selectedFlavours[1].Ftype},,";
+
+            }
+            else if (selectedFlavours.Count == 3)
+            {
+
+                writer += $"{selectedCustomer.Memberid},{DateTime.Now.ToString("dd/MM/yyyy HH:mm")},{DateTime.Now.ToString("dd/MM/yyyy")},{"Cone"},{scoops},{dipped},,{selectedFlavours[0].Ftype},{selectedFlavours[1].Ftype},{selectedFlavours[2].Ftype},";
+
+            }
+            if (selectedFlavours.Count == 0)
+            {
+
+                writer += $",,,";
+
+            }
             if (selectedToppings.Count == 0)
             {
-                File.AppendAllText("orders.csv", $"\n{newOrder.Id},{selectedCustomer.Memberid},{newOrder.Timereceived},,{option},{scoops},{dipped},,{flavors},{toppings},,,");
+                writer += $",,,";
+            }
+            else if (selectedToppings.Count == 1)
+            {
+                writer += $"{selectedToppings[0].Toptype},,,";
+            }
+            else if (selectedToppings.Count == 2)
+            {
+
+                writer += $"{selectedToppings[0].Toptype},{selectedToppings[1].Toptype},,";
+
+            }
+            else if (selectedToppings.Count == 3)
+            {
+
+                writer += $"{selectedToppings[0].Toptype},{selectedToppings[1].Toptype},{selectedToppings[2].Toptype},";
+
+            }
+            else if (selectedToppings.Count == 4)
+            {
+
+
+                writer += $"{selectedToppings[0].Toptype},{selectedToppings[1].Toptype},{selectedToppings[2].Toptype},{selectedToppings[3].Toptype}";
 
             }
 
-            flavors = string.Join(", ", selectedFlavours.Select(flavour => flavour.Ftype));
-            toppings = string.Join(", ", selectedToppings.Select(topping => topping.Toptype));
-            File.AppendAllText("orders.csv", $"\n{newOrder.Id},{selectedCustomer.Memberid},{newOrder.Timereceived},,{option},{scoops},{dipped},,{flavors},{toppings}");
-            
+
+            File.AppendAllText("orders.csv", $"\n{writer}");
+
         }
+
         else if (option.ToLower() == "waffle")
         {
             string flavors = "";
