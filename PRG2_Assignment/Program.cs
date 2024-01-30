@@ -34,7 +34,7 @@ while (true)
         }
         else if (option == 4)
         {
-            CreateOrder(customerList, oList,  flavourList,  toppingsList);
+            goldQueue = CreateOrder(customerList, oList,  flavourList,  toppingsList);
         }
         else if (option == 5)
         {
@@ -83,17 +83,24 @@ static void ReadToppingsCsv(List<Topping> tList)
 }
 static void ReadCustomerCsv(List<Customer> cList)
 {
-    string[] data = File.ReadAllLines("customers.csv");
-    foreach (string line in data.Skip(1)) // Skip header
-    {
-        string[] customers = line.Split(",");
-        string name = customers[0];
-        int id = Convert.ToInt32(customers[1]);
-        DateTime dob = DateTime.Parse(customers[2]);
-        Customer customer = new(name, id, dob);
-        cList.Add(customer);
+        string[] data = File.ReadAllLines("customers.csv");
+        foreach (string line in data.Skip(1)) // Skip header
+        {
+            string[] customers = line.Split(",");
+            string name = customers[0];
+            int id = Convert.ToInt32(customers[1]);
+            DateTime dob = DateTime.Parse(customers[2]);
+            string tier = customers[3];
+            int pts = Convert.ToInt32(customers[4]);
+            int punchcard = Convert.ToInt32(customers[5]);
+
+
+            Customer customer = new(name, id, dob);
+            customer.Rewards = new(pts, punchcard);
+            customer.Rewards.Tier = tier;
+            cList.Add(customer);
+        }
     }
-}
 static void ReadFlavoursCsv(List<Flavour> fList)
 {
     string[] data = File.ReadAllLines("flavours.csv");
@@ -356,9 +363,11 @@ static void CreateOrder(List<Customer> customerList, List<Order> oList, List<Fla
 
         // Add the ice cream to the order
         newOrder.AddIceCream(iceCream);
-
+        File.AppendAllText($"{newOrder.Id},{selectedCustomer.Memberid},{newOrder.Timereceived},{option},{}")
         Console.Write("Add another ice cream to the order? (Y/N): ");
     } while (Console.ReadLine().ToUpper() == "Y");
+
+
 
     // dont know how to add to queue
     if (selectedCustomer.Rewards.Tier == "Gold")
@@ -372,7 +381,7 @@ static void CreateOrder(List<Customer> customerList, List<Order> oList, List<Fla
         regularOrderQueue.Enqueue(newOrder);
     }
     Console.WriteLine("Order has been made successfully.");
-
+    
 }
 //5----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 static void DisplayOrder(List<Customer> customerList)
@@ -396,17 +405,24 @@ static void DisplayOrder(List<Customer> customerList)
 
     List<Order> oList = new();
     List<IceCream> icList = new();
-
+    Console.WriteLine("\r\n---------------- Customers -----------------\r\n");
+    ListCustomers(customerList);
     string[] data = File.ReadAllLines("orders.csv");
-    foreach (string line in data.Skip(1)) // Skip header
+    try
     {
-        List<Flavour> flavours = new();
-        List<Topping> toppings = new();
-        string[] orderinfo = line.Split(',');
+        Console.Write("Enter member ID to display orders: ");
+        int memberId = Convert.ToInt32(Console.ReadLine());
+                 
+        int i = 0;
+
+    foreach (string line1 in data.Skip(1))
+    {
+        string[] orderinfo = line1.Split(',');
         int orderId = Convert.ToInt32(orderinfo[0]);
         int memid = Convert.ToInt32(orderinfo[1]);
         DateTime received = DateTime.Parse(orderinfo[2]);
         DateTime? fulfilled;
+
 
         if (string.IsNullOrEmpty(orderinfo[3]))
         {
@@ -416,8 +432,8 @@ static void DisplayOrder(List<Customer> customerList)
         {
             fulfilled = DateTime.Parse(orderinfo[3]);
         }
-        Order order = new(orderId, received);
-        oList.Add(order);
+        List<Flavour> flavours = new();
+        List<Topping> toppings = new();
         bool prem = false;
         string option = orderinfo[4];
         int scoops = Convert.ToInt32(orderinfo[5]);
@@ -462,59 +478,53 @@ static void DisplayOrder(List<Customer> customerList)
         // Filter flavours with non-empty Ftype
         List<Flavour> filteredFlavours = flavours.Where(f => !string.IsNullOrEmpty(f.Ftype)).ToList();
         flavours = filteredFlavours;
-        if (option == "Cup")
-        {
-            Cup ic = new(option, scoops, flavours, toppings);
-            icList.Add(ic);
-        }
-        else if (option == "Waffle")
-        {
-            Waffle ic = new(option, scoops, flavours, toppings, waffleflav);
-            icList.Add(ic);
-        }
-        else if (option == "Cone")
-        {
-            bool dipped = Convert.ToBoolean(orderinfo[6]);
-            Cone ic = new(option, scoops, flavours, toppings, dipped);
-            icList.Add(ic);
-        }
 
-    }
-    Console.WriteLine("\r\n---------------- Customers -----------------\r\n");
-        ListCustomers(customerList);
 
-        try
-        {
-            Console.Write("Enter member ID to display orders: ");
-            int memberId = Convert.ToInt32(Console.ReadLine());
-
-            
-
-            // Find the selected customer
-            Customer selectedCustomer = customerList.Find(c => c.Memberid == memberId);
-            foreach (Order orders in oList)
+        
+        // Find the customer for the order
+        Customer customer = customerList.Find(c => c.Memberid == memberId);
+            if (customer != null && customer.Memberid == memid)
             {
-
-                if (orders.Timefufilled == null)
+                    
+                Console.WriteLine($"Customer: {customer.Name}");
+                Order order = new(orderId, received);
+                customer.OrderHistory.Add(order);
+                oList.Add(order);
+                if (option == "Cup")
                 {
-                    Console.WriteLine(orders.ToString());
-
-                    // Find the customer for the order
-                    Customer customer = customerList.Find(c => c.Memberid == memberId);
-                    if (customer != null)
-                    {
-                        Console.WriteLine($"Customer: {customer.Name}");
-                        customer.OrderHistory.Add(orders);
-                    }
+                    Cup ic = new(option, scoops, flavours, toppings);
+                    icList.Add(ic);
                 }
+                else if (option == "Waffle")
+                {
+                    Waffle ic = new(option, scoops, flavours, toppings, waffleflav);
+                    icList.Add(ic);
+                }
+                else if (option == "Cone")
+                {
+                    bool dipped = Convert.ToBoolean(orderinfo[6]);
+                    Cone ic = new(option, scoops, flavours, toppings, dipped);
+                    icList.Add(ic);
+                }
+                Console.WriteLine(order.ToString());
+                Console.WriteLine($"Total Price: {icList[i].CalculatePrice():C2}");
+                Console.WriteLine("Ice Creams in Order:");
+                Console.WriteLine($" - {icList[i].ToString()}");
+                i++;
+                Console.WriteLine("------------------------------------------\r\n");
+                
             }
+                
+                
+        }
 
-        }
-        catch (FormatException)
-        {
-            Console.WriteLine("Invalid input. Please enter a valid integer for the member ID.");
-        }
+
     }
+    catch (FormatException)
+    {
+        Console.WriteLine("Invalid input. Please enter a valid integer for the member ID.");
+    }
+ }
     //6
     //WORKING IN PROGRESS DONT MARK AH --------------------------------------------------------------------------------------------------------
 static void ModifyOrder(List<Customer> custList)
