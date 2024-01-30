@@ -34,7 +34,7 @@ while (true)
         }
         else if (option == 4)
         {
-            goldQueue = CreateOrder(customerList, oList,  flavourList,  toppingsList);
+            CreateOrder(customerList, oList,  flavourList,  toppingsList);
         }
         else if (option == 5)
         {
@@ -270,6 +270,7 @@ static void CustomerReg(List<Customer> customerList)
 //4 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 static void CreateOrder(List<Customer> customerList, List<Order> oList, List<Flavour> flavourList, List<Topping> toppingsList)
 {
+    
     Queue<Order> goldMemberOrderQueue = new Queue<Order>();
     Queue<Order> regularOrderQueue = new Queue<Order>();
     Console.Write("Select a customer (Enter Member ID): ");
@@ -350,20 +351,79 @@ static void CreateOrder(List<Customer> customerList, List<Order> oList, List<Fla
         IceCream iceCream = null;
         if (option.ToLower() == "cup")
         {
-            iceCream = new Cup(option, scoops, selectedFlavours, selectedToppings);
+            string flavors = "";
+            string toppings = "";
+            iceCream = new Cup("Cup", scoops, selectedFlavours, selectedToppings);
+            
+            if (selectedToppings.Count == 0)
+            {
+                File.AppendAllText("orders.csv", $"\n{newOrder.Id},{selectedCustomer.Memberid},{newOrder.Timereceived},,{option},{scoops},,,{flavors},,,{toppings},,,,");
+            }
+            flavors = string.Join(", ", selectedFlavours.Select(flavour => flavour.Ftype));
+            toppings = string.Join(", ", selectedToppings.Select(topping => topping.Toptype));
+            
+
         }
+        File.AppendAllText("orders.csv", $"\n{newOrder.Id},{selectedCustomer.Memberid},{newOrder.Timereceived},,{option},{scoops},,,{flavors},{toppings}");
         else if (option.ToLower() == "cone")
         {
-            iceCream = new Cone(option, scoops, selectedFlavours, selectedToppings, false);
+            string flavors = "";
+            string toppings = "";
+            bool dipped = false;
+            Console.Write("Dipped? Y/N");
+            string yesno = Console.ReadLine();
+            if (yesno.ToUpper() == "Y") { dipped = true; }
+            iceCream = new Cone("Cone", scoops, selectedFlavours, selectedToppings, dipped);
+            if (selectedToppings.Count == 0)
+            {
+                File.AppendAllText("orders.csv", $"\n{newOrder.Id},{selectedCustomer.Memberid},{newOrder.Timereceived},,{option},{scoops},{dipped},,{flavors},{toppings},,,");
+
+            }
+
+            flavors = string.Join(", ", selectedFlavours.Select(flavour => flavour.Ftype));
+            toppings = string.Join(", ", selectedToppings.Select(topping => topping.Toptype));
+            File.AppendAllText("orders.csv", $"\n{newOrder.Id},{selectedCustomer.Memberid},{newOrder.Timereceived},,{option},{scoops},{dipped},,{flavors},{toppings}");
+            
         }
         else if (option.ToLower() == "waffle")
         {
-            iceCream = new Waffle(option, scoops, selectedFlavours, selectedToppings, "standard");
-        }
+            string flavors = "";
+            string toppings = "";
+            List<string> waffleflavours = new();
+            waffleflavours.Add("Red Velvet");
+            waffleflavours.Add("Charcoal");
+            waffleflavours.Add("Pandan");
+            waffleflavours.Add("Standard");
 
+
+            Console.WriteLine("Waffle Flavours: ");
+            foreach (string flavour in waffleflavours)
+            {
+            Console.WriteLine(flavour);
+
+            }
+            Console.WriteLine("Choose flavour: ");
+            string select = Console.ReadLine();
+
+            foreach (string flavour in waffleflavours)
+            {
+                if (select == flavour.ToLower())
+                {
+                    select = flavour;
+                }
+            }
+            iceCream = new Waffle("Waffle", scoops, selectedFlavours, selectedToppings, select);
+            if (selectedToppings.Count == 0)
+            {
+                File.AppendAllText("orders.csv", $"\n{newOrder.Id},{selectedCustomer.Memberid},{newOrder.Timereceived},,{option},{scoops},,{select},{flavors},,,{toppings},,,,");
+            }
+            flavors = string.Join(", ", selectedFlavours.Select(flavour => flavour.Ftype));
+            toppings = string.Join(", ", selectedToppings.Select(topping => topping.Toptype));
+            File.AppendAllText("orders.csv", $"\n{newOrder.Id},{selectedCustomer.Memberid},{newOrder.Timereceived},,{option},{scoops},,{select},{flavors},{toppings}");
+        }
         // Add the ice cream to the order
         newOrder.AddIceCream(iceCream);
-        File.AppendAllText($"{newOrder.Id},{selectedCustomer.Memberid},{newOrder.Timereceived},{option},{}")
+        
         Console.Write("Add another ice cream to the order? (Y/N): ");
     } while (Console.ReadLine().ToUpper() == "Y");
 
