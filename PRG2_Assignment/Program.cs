@@ -51,7 +51,7 @@ while (true)
         }
         else if (option == 8)
         {
-            DisplayMonthlyChargedAmounts(customerList);
+            DisplayMonthlyChargedAmounts(oList);
         }
         else
         {
@@ -285,7 +285,7 @@ static void CustomerReg(List<Customer> customerList)
     DateTime dob = Convert.ToDateTime(Console.ReadLine());
     Customer newCustomer = new(name, id, dob);
     newCustomer.Rewards = new(0, 0);
-    string customerInfo = $"\n{name},{id},{dob:dd/mm/yyyy},{newCustomer.Rewards.Tier}{newCustomer.Rewards.Points}{newCustomer.Rewards.PunchCard}";
+    string customerInfo = $"\n{name},{id},{dob:dd/mm/yyyy},{newCustomer.Rewards.Tier},{newCustomer.Rewards.Points},{newCustomer.Rewards.PunchCard}";
     customerList.Add(newCustomer);
     File.AppendAllText("customers.csv", customerInfo);
 }
@@ -608,7 +608,6 @@ static void CreateOrder(List<Customer> customerList, List<Order> oList, List<Fla
 //Basic feature 5----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 static void DisplayOrder(List<Customer> customerList)
 {
-
     bool ispremium = false;
     List<Flavour> fList = new();
     string[] fdata = File.ReadAllLines("flavours.csv");
@@ -624,7 +623,6 @@ static void DisplayOrder(List<Customer> customerList)
         Flavour flavour = new(name, ispremium, 1);
         fList.Add(flavour);
     }
-
     List<Order> oList = new();
     List<IceCream> icList = new();
     Console.WriteLine("\r\n---------------- Customers -----------------\r\n");
@@ -644,8 +642,6 @@ static void DisplayOrder(List<Customer> customerList)
         int memid = Convert.ToInt32(orderinfo[1]);
         DateTime received = DateTime.Parse(orderinfo[2]);
         DateTime? fulfilled;
-
-
         if (string.IsNullOrEmpty(orderinfo[3]))
         {
             fulfilled = null;
@@ -1299,35 +1295,172 @@ static void ProcessAndCheckout(Queue<Order> goldqueue, Queue<Order> regularqueue
         Console.WriteLine("There is no current orders");
     }
 }
-static void DisplayMonthlyChargedAmounts(List<Customer> custList)
+
+static void DisplayMonthlyChargedAmounts(List<Order> oList)
 {
     Console.Write("Enter the year: ");
     int year = Convert.ToInt32(Console.ReadLine());
     double[] monthlyAmounts = new double[12];
-
-    foreach (Customer customer in custList)
+    bool ispremium = false;
+    List<Flavour> fList = new();
+    string[] fdata = File.ReadAllLines("flavours.csv");
+    foreach (string line in fdata.Skip(1))
     {
+        string[] flavourinfo = line.Split(",");
+        string name = flavourinfo[0];
+        int cost = Convert.ToInt32(flavourinfo[1]);
+        if (cost == 2)
+        {
+            ispremium = true;
+        }
 
-        
-        
-            // Check if the order was fulfilled in the specified year
-            /*
-            if (order.Timefufilled.HasValue && order.Timefufilled.Value.Year == year)
+        Flavour flavour = new(name, ispremium, 1);
+        fList.Add(flavour);
+    }
+
+    List<IceCream> icList = new();
+    string[] data = File.ReadAllLines("orders.csv");
+    foreach (string line in data.Skip(1)) // Skip header
+    {
+        List<Flavour> flavours = new();
+        List<Topping> toppings = new();
+        string[] orderinfo = line.Split(',');
+        int orderId = Convert.ToInt32(orderinfo[0]);
+        int memid = Convert.ToInt32(orderinfo[1]);
+        DateTime received = DateTime.Parse(orderinfo[2]);
+        DateTime? fulfilled;
+
+        if (string.IsNullOrEmpty(orderinfo[3]))
+        {
+            fulfilled = null;
+        }
+        else
+        {
+            fulfilled = DateTime.Parse(orderinfo[3]);
+        }
+
+        Order order = new(orderId, received);
+        oList.Add(order);
+        bool prem = false;
+        string option = orderinfo[4];
+        int scoops = Convert.ToInt32(orderinfo[5]);
+        string waffleflav = orderinfo[7];
+        string ft1 = orderinfo[8];
+        string ft2 = orderinfo[9];
+        string ft3 = orderinfo[10];
+        foreach (Flavour flavour in fList)
+        {
+            if (flavour.Ftype == ft1 && flavour.Premium == true)
             {
-                int month = order.Timefufilled.Value.Month;
-                double orderTotal = order.CalculateTotal();
-                monthlyAmounts[month - 1] += orderTotal;
-            }*/
-        
+                prem = true;
+            }
+
+            if (flavour.Ftype == ft2 && flavour.Premium == true)
+            {
+                prem = true;
+            }
+
+            if (flavour.Ftype == ft3 && flavour.Premium == true)
+            {
+                prem = true;
+            }
+        }
+
+        Flavour f1 = new(ft1, prem, 1);
+        Flavour f2 = new(ft2, prem, 1);
+        Flavour f3 = new(ft3, prem, 1);
+        flavours.Add(f1);
+        flavours.Add(f2);
+        flavours.Add(f3);
+        Topping t1 = new(orderinfo[11]);
+        Topping t2 = new(orderinfo[12]);
+        Topping t3 = new(orderinfo[13]);
+        Topping t4 = new(orderinfo[14]);
+        toppings.Add(t1);
+        toppings.Add(t2);
+        toppings.Add(t3);
+        toppings.Add(t4);
+        // Filter toppings with non-empty Toptype
+        List<Topping> filteredToppings = toppings.Where(t => !string.IsNullOrEmpty(t.Toptype)).ToList();
+        toppings = filteredToppings;
+
+        // Filter flavours with non-empty Ftype
+        List<Flavour> filteredFlavours = flavours.Where(f => !string.IsNullOrEmpty(f.Ftype)).ToList();
+        flavours = filteredFlavours;
+        if (option == "Cup")
+        {
+            Cup ic = new(option, scoops, flavours, toppings);
+            icList.Add(ic);
+        }
+        else if (option == "Waffle")
+        {
+            Waffle ic = new(option, scoops, flavours, toppings, waffleflav);
+            icList.Add(ic);
+        }
+        else if (option == "Cone")
+        {
+            bool dipped = Convert.ToBoolean(orderinfo[6]);
+            Cone ic = new(option, scoops, flavours, toppings, dipped);
+            icList.Add(ic);
+        }
     }
 
-    Console.WriteLine($"Monthly Charged Amounts Breakdown for the Year {year}:");
-    for (int month = 1; month <= 12; month++)
+    List<Order> specificorder = new();
+    foreach (Order order in oList)
     {
-        string monthName = new DateTime(year, month, 1).ToString("MMM", System.Globalization.CultureInfo.InvariantCulture);
-        Console.WriteLine($"{monthName} {year}: ${monthlyAmounts[month - 1]:F2}");
+
+        if (year == order.Timefufilled?.Year)
+        {
+            specificorder.Add(order);
+        }
+
     }
 
-    double totalChargedAmount = monthlyAmounts.Sum();
-    Console.WriteLine($"Total Charged Amount for the Year {year}: ${totalChargedAmount:F2}");
+    foreach (Order orders in specificorder)
+    {
+        double total = orders.CalculateTotal();
+        switch (orders.Timefufilled?.Month)
+        {
+            case 1:
+                monthlyAmounts[0] += total;
+                break;
+            case 2:
+                monthlyAmounts[1] += total;
+                break;
+            case 3:
+                monthlyAmounts[2] += total;
+                break;
+            case 4:
+                monthlyAmounts[3] += total;
+                break;
+            case 5:
+                monthlyAmounts[4] += total;
+                break;
+            case 6:
+                monthlyAmounts[5] += total;
+                break;
+            case 7:
+                monthlyAmounts[6] += total;
+                break;
+            case 8:
+                monthlyAmounts[7] += total;
+                break;
+            case 9:
+                monthlyAmounts[8] += total;
+                break;
+            case 10:
+                monthlyAmounts[9] += total;
+                break;
+            case 11:
+                monthlyAmounts[10] += total;
+                break;
+            case 12:
+                monthlyAmounts[11] += total;
+                break;
+        
+        }
+        Console.WriteLine($"Monthly Charged Amounts Breakdown for the Year {year}:");
+        double totalChargedAmount = monthlyAmounts.Sum();
+        Console.WriteLine($"Total Charged Amount for the Year {year}: ${totalChargedAmount:F2}");
+    }
 }
