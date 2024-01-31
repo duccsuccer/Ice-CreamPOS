@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 List<Topping> toppingsList = new();
 List<Flavour> flavourList = new();
-List<IceCream> iceCreamList = new();
 List<Order> oList = new();
 List<Customer> customerList = new();
 Queue<Order> goldqueue = new();
@@ -15,7 +14,6 @@ while (true)
     int option;
     try
     { 
-
         DisplayMenu();
         option = Convert.ToInt32(Console.ReadLine());
         if (option == 0)
@@ -133,9 +131,10 @@ static void ReadFlavoursCsv(List<Flavour> fList)
 //Basic feature 1--------------------------------------------------------------------------------------------------------------------------------------------------------
 static void ListCustomers(List<Customer> cList) 
 {
+    Console.WriteLine($"{"Name",-10}{"Member ID",-10}{"Date of Birth",-15}{"Tier",-10}{"Points",-10}{"Punchcard"}");
     foreach (Customer customer in cList)
     {
-        Console.WriteLine(customer.ToString());
+        Console.WriteLine($"{customer.Name,-10}{customer.Memberid,-10}{customer.Dob,-15:dd/MM/yyyy}{customer.Rewards.Tier,-10}{customer.Rewards.Points,-10}{customer.Rewards.PunchCard}");
     }
 }
 
@@ -274,11 +273,19 @@ static void CustomerReg(List<Customer> customerList)
     Random random = new();
     Console.Write("Name: ");
     string name = Console.ReadLine();
+    // Validate name
+    while (string.IsNullOrWhiteSpace(name))
+    {
+        Console.WriteLine("Invalid input. Name cannot be empty. Please try again.");
+        Console.Write("Name: ");
+        name = Console.ReadLine();
+    }
     int id = random.Next(100000, 999999);
     Console.Write("Date of Birth(dd/mm/yyyy): ");
     DateTime dob = Convert.ToDateTime(Console.ReadLine());
     Customer newCustomer = new(name, id, dob);
-    string customerInfo = $"\n{name},{id},{dob.Date}";
+    newCustomer.Rewards = new(0, 0);
+    string customerInfo = $"\n{name},{id},{dob:dd/mm/yyyy},{newCustomer.Rewards.Tier}{newCustomer.Rewards.Points}{newCustomer.Rewards.PunchCard}";
     customerList.Add(newCustomer);
     File.AppendAllText("customers.csv", customerInfo);
 }
@@ -286,10 +293,9 @@ static void CustomerReg(List<Customer> customerList)
 static void CreateOrder(List<Customer> customerList, List<Order> oList, List<Flavour> flavourList, List<Topping> toppingsList, Queue<Order> goldMemberOrderQueue,Queue<Order> regularOrderQueue)
 {
     
-    
+    ListCustomers(customerList);
     Console.Write("Select a customer (Enter Member ID): ");
     int memberId = Convert.ToInt32(Console.ReadLine());
-
     // Find the selected customer
     Customer selectedCustomer = customerList.Find(c => c.Memberid == memberId);
 
@@ -758,7 +764,6 @@ static void ModifyOrder(List<Customer> custList, List<Flavour> flavourList, List
         Flavour flavour = new(name, ispremium, 1);
         fList.Add(flavour);
     }
-    List<IceCream> curricreamList = new();
     List<Order> oList = new();
     List<IceCream> icList = new();
     Console.WriteLine("\r\n---------------- Customers -----------------\r\n");
