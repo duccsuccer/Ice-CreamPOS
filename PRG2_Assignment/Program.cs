@@ -53,7 +53,7 @@ while (true)
         }
         else if (option == 8)
         {
-            DisplayMonthlyChargedAmounts(custList);
+            DisplayMonthlyChargedAmounts(customerList);
         }
         else
         {
@@ -75,13 +75,13 @@ static void DisplayMenu()
     "[4] Create a customer's order\r\n" +
     "[5] Display order details of a customer\r\n" +
     "[6] Modify order details\r\n" +
-    "[7] Process order and checkout\r\n +
-    "[8] Display monthly charges\r\n +
+    "[7] Process order and checkout\r\n" +
+    "[8] Display monthly charges\r\n" +
     "[0] Exit\r\n------------------------------------------\r\n" +
     "Enter your option : ");
 
 }
-
+//Read topping file
 static void ReadToppingsCsv(List<Topping> tList)
 {
     string[] data = File.ReadAllLines("customers.csv");
@@ -93,6 +93,7 @@ static void ReadToppingsCsv(List<Topping> tList)
         tList.Add(topping);
     }
 }
+//Read customer file
 static void ReadCustomerCsv(List<Customer> cList)
 {
         string[] data = File.ReadAllLines("customers.csv");
@@ -113,6 +114,7 @@ static void ReadCustomerCsv(List<Customer> cList)
             cList.Add(customer);
         }
     }
+//Read flavour file
 static void ReadFlavoursCsv(List<Flavour> fList)
 {
     string[] data = File.ReadAllLines("flavours.csv");
@@ -128,7 +130,7 @@ static void ReadFlavoursCsv(List<Flavour> fList)
     }
 
 }
-//1--------------------------------------------------------------------------------------------------------------------------------------------------------
+//Basic feature 1--------------------------------------------------------------------------------------------------------------------------------------------------------
 static void ListCustomers(List<Customer> cList) 
 {
     foreach (Customer customer in cList)
@@ -136,7 +138,8 @@ static void ListCustomers(List<Customer> cList)
         Console.WriteLine(customer.ToString());
     }
 }
-//2-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//Basic feature 2-----------------------------------------------------------------------------------------------------------------------------------------------------------
 static void ListCurrentOrders(List<Customer> customerList)
 {
     bool ispremium = false;
@@ -265,7 +268,7 @@ static void ListCurrentOrders(List<Customer> customerList)
         }
     }
 }
-//3 ------------------------------------------------------------------------------------------------------------------------------------------------------
+//Basic feature 3 ------------------------------------------------------------------------------------------------------------------------------------------------------
 static void CustomerReg(List<Customer> customerList)
 {
     Random random = new();
@@ -279,7 +282,7 @@ static void CustomerReg(List<Customer> customerList)
     customerList.Add(newCustomer);
     File.AppendAllText("customers.csv", customerInfo);
 }
-//4 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//Basic feature 4 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 static void CreateOrder(List<Customer> customerList, List<Order> oList, List<Flavour> flavourList, List<Topping> toppingsList, Queue<Order> goldMemberOrderQueue,Queue<Order> regularOrderQueue)
 {
     
@@ -596,7 +599,7 @@ static void CreateOrder(List<Customer> customerList, List<Order> oList, List<Fla
     Console.WriteLine("Order has been made successfully.");
     
 }
-//5----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//Basic feature 5----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 static void DisplayOrder(List<Customer> customerList)
 {
 
@@ -691,8 +694,6 @@ static void DisplayOrder(List<Customer> customerList)
         // Filter flavours with non-empty Ftype
         List<Flavour> filteredFlavours = flavours.Where(f => !string.IsNullOrEmpty(f.Ftype)).ToList();
         flavours = filteredFlavours;
-
-
         
         // Find the customer for the order
         Customer customer = customerList.Find(c => c.Memberid == memberId);
@@ -738,7 +739,7 @@ static void DisplayOrder(List<Customer> customerList)
         Console.WriteLine("Invalid input. Please enter a valid integer for the member ID.");
     }
  }
-    //6
+    //Basic feature 6
     //-----------------------------------------------------------------------------------------------------------------------
 static void ModifyOrder(List<Customer> custList, List<Flavour> flavourList, List<Topping> toppingsList)
 {
@@ -1282,8 +1283,18 @@ static void ProcessAndCheckout(Queue<Order> goldqueue, Queue<Order> regularqueue
         double totalBill = currentOrder.CalculateTotal();
         Console.WriteLine($"Total Bill Amount: {totalBill:C2}");
     }
+    else if (regularqueue.Count > 0)
+    {
+        Order currentOrder = regularqueue.Dequeue();
+        double totalBill = currentOrder.CalculateTotal();
+        Console.WriteLine($"Total Bill Amount: {totalBill:C2}");
+    }
+    else
+    {
+        Console.WriteLine("There is no current orders");
+    }
 }
-static void DisplayMonthlyCharged(List<Customer> custList)
+static void DisplayMonthlyChargedAmounts(List<Customer> custList)
 {
     Console.Write("Enter the year: ");
     int year = Convert.ToInt32(Console.ReadLine());
@@ -1295,12 +1306,13 @@ static void DisplayMonthlyCharged(List<Customer> custList)
         
         
             // Check if the order was fulfilled in the specified year
+            /*
             if (order.Timefufilled.HasValue && order.Timefufilled.Value.Year == year)
             {
                 int month = order.Timefufilled.Value.Month;
                 double orderTotal = order.CalculateTotal();
                 monthlyAmounts[month - 1] += orderTotal;
-            }
+            }*/
         
     }
 
